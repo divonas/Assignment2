@@ -25,7 +25,8 @@ module Model
                 # We check if the attribute exists
                 if (res[:attributes].include?(att_name))
                     const = line[1].split(',')[1]
-                    res[:constraints][att_name].push(const)
+                    # We remove the quotes
+                    res[:constraints][att_name].push(eval(const))
                 end
             end
         end
@@ -49,20 +50,39 @@ module Model
             puts attr
             # we get the constraints for this attribute
             consts = src[:constraints][attr]
-            puts consts
-            curr_class.instance_eval %(
+            # We create a statement with the constraints
+            const_list = 'true'
+            consts.each { |c|
+                const_list += " and " + '(@' + c + ')'
+            }
+            # we need to differenciate getter and setter, with val
+            const_list_set = const_list.gsub('@' + attr, 'val')
+            code = %(
                 def #{attr}
-                    @#{attr}
+                    if (#{const_list})
+                        @#{attr}
+                    else
+                        puts "NOEZ"
+                    end
                 end
                 def #{attr}=(val)
-                    @#{attr} = val
+                    if (#{const_list_set})
+                        @#{attr} = val
+                    else
+                        puts "NOEZ"
+                    end
                 end
             )
+            puts "CODE\n"
+            puts code
+            puts "CODE\n"
+            curr_class.instance_eval(code)
         }
 
         pomme = Person
-        pomme.name = "Hello"
-        puts pomme.methods
+        pomme.age = 2
+        puts pomme.age
+        pomme.name = ""
     end
 end
 
