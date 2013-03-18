@@ -1,0 +1,15 @@
+tests:
+   - name: FauxJohan
+     age: -260
+   - name: Johan
+     age: 26
+   - name: Tobias
+     age: 29
+   - name: Beatrice
+     age: 32
+   - name: FauxBeatrice
+     age: 400
+   - name: Tobias
+     age: -29
+   - name: Marve Flexnes
+     misc: Deeeeo

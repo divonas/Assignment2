@@ -1,11 +1,7 @@
 #! /usr/bin/env ruby
-
 require 'yaml'
 
 module Model
-=begin
-=end
-
     def self.get_class_elements(file_path)
     # This methods opens the file file_path and returns a dictionnary with :
     # {title: [title], attributes: [attributes], constraints: [constraints]}
@@ -37,7 +33,6 @@ module Model
     def self.generate(file_path)
         src = get_class_elements(file_path)
         class_title = src[:title]
-        #puts %(class #{class_title}; end)
         # We create the class
         eval %(class #{class_title}; end)
         # We get the class
@@ -103,7 +98,3 @@ module Model
         return curr_class
     end
 end
-
-#m = Model
-#c = m.generate("/home/mogmi/Prog/Ruby/Assignment2/person_class.yml")
-#puts c.methods
