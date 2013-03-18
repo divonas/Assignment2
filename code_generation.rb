@@ -37,7 +37,7 @@ module Model
     def self.generate(file_path)
         src = get_class_elements(file_path)
         class_title = src[:title]
-        puts %(class #{class_title}; end)
+        #puts %(class #{class_title}; end)
         # We create the class
         eval %(class #{class_title}; end)
         # We get the class
@@ -47,7 +47,6 @@ module Model
         # Maybe putting everything in 1 string and do only 1 eval
         # is better for perfs
         src[:attributes].each { |attr|
-            puts attr
             # we get the constraints for this attribute
             consts = src[:constraints][attr]
             # We create a statement with the constraints
@@ -62,32 +61,36 @@ module Model
                     if (#{const_list})
                         @#{attr}
                     else
-                        puts "NOEZ"
+                        raise
                     end
                 end
                 def #{attr}=(val)
                     if (#{const_list_set})
                         @#{attr} = val
                     else
-                        puts "NOEZ"
+                        raise
                     end
                 end
             )
-            puts "CODE\n"
-            puts code
-            puts "CODE\n"
-            curr_class.instance_eval(code)
+            curr_class.class_eval(code)
         }
 
-        pomme = Person
-        pomme.age = 2
-        puts pomme.age
-        pomme.name = ""
+        # We create the method load_from_file
+        curr_class.class_eval do
+            def pomme
+                puts class_title
+            end
+        end
+        
+        # We return the class
+        return curr_class
     end
 end
 
-m = Model
-m.generate("/home/mogmi/Prog/Ruby/Assignment2/person_class.yml")
+#m = Model
+#c = m.generate("/home/mogmi/Prog/Ruby/Assignment2/person_class.yml")
+#puts c.methods
+
 =begin
 puts m
         yml = YAML::load(File.open(file_path))
