@@ -52,8 +52,9 @@ module Model
             # We create a statement with the constraints
             const_list = 'true'
             consts.each { |c|
-                const_list += " and " + '(@' + c + ')'
+                const_list += " and " + '(' + c + ')'
             }
+            const_list = const_list.gsub(attr, '@' + attr)
             # we need to differenciate getter and setter, with val
             const_list_set = const_list.gsub('@' + attr, 'val')
             code = %(
@@ -61,14 +62,14 @@ module Model
                     if (#{const_list})
                         @#{attr}
                     else
-                        raise
+                        raise RuntimeError
                     end
                 end
                 def #{attr}=(val)
                     if (#{const_list_set})
                         @#{attr} = val
                     else
-                        raise
+                        raise RuntimeError
                     end
                 end
             )
@@ -76,9 +77,25 @@ module Model
         }
 
         # We create the method load_from_file
-        curr_class.class_eval do
-            def pomme
-                puts class_title
+        curr_class.instance_eval do
+            def load_from_file(file_path)
+                # This methods generates an array of instances
+                res = []
+                yml = YAML::load(File.open(file_path))
+                yml.first[1].each { |p|
+                    neo = new
+                    begin
+                    neo.name = p["name"]
+                    neo.age = p["age"]
+                    rescue
+                        puts "Not created, problem"
+                    else
+                        puts "Created"
+                        res.push(neo)
+                    end    
+                }
+
+                return res
             end
         end
         
@@ -90,8 +107,3 @@ end
 #m = Model
 #c = m.generate("/home/mogmi/Prog/Ruby/Assignment2/person_class.yml")
 #puts c.methods
-
-=begin
-puts m
-        yml = YAML::load(File.open(file_path))
-=end
