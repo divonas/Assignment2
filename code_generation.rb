@@ -87,13 +87,13 @@ module Model
                     else
                         puts "Created"
                         res.push(neo)
-                    end    
+                    end
                 }
 
                 return res
             end
         end
-        
+
         # We return the class
         return curr_class
     end
